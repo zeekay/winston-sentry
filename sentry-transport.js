@@ -8,7 +8,14 @@ var Sentry = winston.transports.CustomerLogger = function (options) {
   this.name = 'Sentry';
   this._dsn = options.dsn || '';
   this._patchGlobal = options.patchGlobal || false;
+
+  // Set NODE_ENV to production to override annoying node-raven restriction
+  var env = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
   this._sentry = new raven.Client(this._dsn);
+  // Set it back to original value
+  process.env.NODE_ENV = env;
+
   this._logger = options.logger || 'root';
 
   if(this.patchGlobal) {
